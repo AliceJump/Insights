@@ -66,11 +66,16 @@ jobs:
             page += 1
 
           owned = [r for r in repos if not r.get("fork")]
+          excluded_language_repos = {"game_local"}
+          owned_for_languages = [
+            r for r in owned
+            if str(r.get("name", "")).lower() not in excluded_language_repos
+          ]
           stars = sum(int(r.get("stargazers_count", 0)) for r in owned)
           forks = sum(int(r.get("forks_count", 0)) for r in owned)
 
           lang_totals = {}
-          for repo in owned:
+          for repo in owned_for_languages:
             languages_url = repo.get("languages_url")
             if not languages_url:
               continue
