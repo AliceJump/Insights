@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-16T22:20:49.692265+00:00",
+  "generated_at": "2026-05-16T22:31:04.918816+00:00",
   "username": "AliceJump",
   "public_repos": 28,
   "followers": 15,
@@ -8,34 +8,34 @@
   "forks": 43,
   "top_languages": [
     {
-      "name": "HLSL",
-      "bytes": 10233884,
-      "percent": 75.47
-    },
-    {
       "name": "Python",
       "bytes": 2709292,
-      "percent": 19.98
+      "percent": 81.81
     },
     {
       "name": "Java",
       "bytes": 180430,
-      "percent": 1.33
+      "percent": 5.45
     },
     {
       "name": "Kotlin",
       "bytes": 175477,
-      "percent": 1.29
+      "percent": 5.3
     },
     {
       "name": "C#",
       "bytes": 58707,
-      "percent": 0.43
+      "percent": 1.77
     },
     {
       "name": "Dart",
       "bytes": 57783,
-      "percent": 0.43
+      "percent": 1.74
+    },
+    {
+      "name": "PowerShell",
+      "bytes": 36902,
+      "percent": 1.11
     }
   ]
 }
