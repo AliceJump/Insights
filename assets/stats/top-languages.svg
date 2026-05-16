@@ -1,0 +1,6 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='520' height='330' viewBox='0 0 520 330' role='img' aria-label='Top languages for AliceJump'>
+  <rect width='520' height='330' rx='16' fill='#ffffff'/>
+  <rect x='1' y='1' width='518' height='328' rx='15' fill='none' stroke='#e2e8f0'/>
+  <text x='28' y='44' fill='#0f172a' font-size='22' font-weight='700' font-family='-apple-system,Segoe UI,Arial,sans-serif'>Top Languages (by bytes)</text>
+  <text x='28' y='90' fill='#64748b' font-size='14' font-family='-apple-system,Segoe UI,Arial,sans-serif'>No language data available yet. Run workflow to generate.</text>
+</svg>
