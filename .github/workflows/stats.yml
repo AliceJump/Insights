@@ -1,0 +1,192 @@
+name: Update Profile Stats
+
+on:
+  schedule:
+    - cron: '23 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: profile-stats
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate static stats assets
+        env:
+          PROFILE_USERNAME: AliceJump
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.parse
+          import urllib.request
+          from datetime import datetime, timezone
+          from html import escape
+
+          username = os.environ.get("PROFILE_USERNAME", "AliceJump")
+          token = os.environ.get("GITHUB_TOKEN", "")
+          api = "https://api.github.com"
+
+          headers = {
+            "Accept": "application/vnd.github+json",
+            "User-Agent": "profile-stats-generator",
+          }
+          if token:
+            headers["Authorization"] = f"Bearer {token}"
+
+          def get_json(url: str):
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=30) as resp:
+              return json.load(resp)
+
+          user = get_json(f"{api}/users/{urllib.parse.quote(username)}")
+
+          repos = []
+          page = 1
+          while True:
+            url = (
+              f"{api}/users/{urllib.parse.quote(username)}/repos"
+              f"?per_page=100&page={page}&type=owner&sort=updated"
+            )
+            chunk = get_json(url)
+            if not chunk:
+              break
+            repos.extend(chunk)
+            if len(chunk) < 100:
+              break
+            page += 1
+
+          owned = [r for r in repos if not r.get("fork")]
+          stars = sum(int(r.get("stargazers_count", 0)) for r in owned)
+          forks = sum(int(r.get("forks_count", 0)) for r in owned)
+
+          lang_totals = {}
+          for repo in owned:
+            languages_url = repo.get("languages_url")
+            if not languages_url:
+              continue
+            try:
+              lang_data = get_json(languages_url)
+            except Exception:
+              continue
+            for lang, size in lang_data.items():
+              lang_totals[lang] = lang_totals.get(lang, 0) + int(size)
+
+          sorted_langs = sorted(lang_totals.items(), key=lambda x: x[1], reverse=True)
+          top_langs = sorted_langs[:6]
+          total_lang_bytes = sum(lang_totals.values()) or 1
+
+          summary = {
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "username": username,
+            "public_repos": int(user.get("public_repos", 0)),
+            "followers": int(user.get("followers", 0)),
+            "following": int(user.get("following", 0)),
+            "stars": stars,
+            "forks": forks,
+            "top_languages": [
+              {
+                "name": name,
+                "bytes": size,
+                "percent": round(size * 100 / total_lang_bytes, 2),
+              }
+              for name, size in top_langs
+            ],
+          }
+
+          os.makedirs("assets/stats", exist_ok=True)
+          with open("assets/stats/summary.json", "w", encoding="utf-8") as f:
+            json.dump(summary, f, ensure_ascii=False, indent=2)
+
+          rows = [
+            ("Public Repos", summary["public_repos"]),
+            ("Followers", summary["followers"]),
+            ("Following", summary["following"]),
+            ("Total Stars", summary["stars"]),
+            ("Total Forks", summary["forks"]),
+          ]
+
+          row_svg = "\n".join(
+            (
+              f"<text x='28' y='{86 + i * 36}' fill='#0f172a' font-size='16' "
+              "font-family='-apple-system,Segoe UI,Arial,sans-serif'>"
+              f"{escape(label)}: <tspan font-weight='700'>{value}</tspan></text>"
+            )
+            for i, (label, value) in enumerate(rows)
+          )
+
+          overview_svg = f"""<svg xmlns='http://www.w3.org/2000/svg' width='520' height='270' viewBox='0 0 520 270' role='img' aria-label='GitHub profile stats for {escape(username)}'>
+            <rect width='520' height='270' rx='16' fill='#ffffff'/>
+            <rect x='1' y='1' width='518' height='268' rx='15' fill='none' stroke='#e2e8f0'/>
+            <text x='28' y='44' fill='#0f172a' font-size='22' font-weight='700' font-family='-apple-system,Segoe UI,Arial,sans-serif'>{escape(username)} · GitHub Stats</text>
+            {row_svg}
+            <text x='28' y='246' fill='#64748b' font-size='12' font-family='-apple-system,Segoe UI,Arial,sans-serif'>Updated: {escape(summary['generated_at'][:19])} UTC</text>
+          </svg>
+          """
+
+          with open("assets/stats/overview.svg", "w", encoding="utf-8") as f:
+            f.write(overview_svg)
+
+          palette = ["#2563eb", "#0ea5e9", "#06b6d4", "#14b8a6", "#22c55e", "#84cc16"]
+          bar_y_start = 92
+          bar_h = 22
+          bar_gap = 14
+          bar_max = 340
+
+          lang_lines = []
+          for i, (name, size) in enumerate(top_langs[:6]):
+            pct = size * 100 / total_lang_bytes
+            width = max(2, int(bar_max * pct / 100))
+            y = bar_y_start + i * (bar_h + bar_gap)
+            color = palette[i % len(palette)]
+            lang_lines.append(
+              f"<text x='28' y='{y - 8}' fill='#0f172a' font-size='13' "
+              "font-family='-apple-system,Segoe UI,Arial,sans-serif'>"
+              f"{escape(name)} <tspan fill='#64748b'>{pct:.1f}%</tspan></text>"
+            )
+            lang_lines.append(
+              f"<rect x='28' y='{y}' width='{bar_max}' height='{bar_h}' rx='10' fill='#e2e8f0'/>"
+            )
+            lang_lines.append(
+              f"<rect x='28' y='{y}' width='{width}' height='{bar_h}' rx='10' fill='{color}'/>"
+            )
+
+          language_content = "".join(lang_lines) if lang_lines else (
+            "<text x='28' y='90' fill='#64748b' font-size='14' "
+            "font-family='-apple-system,Segoe UI,Arial,sans-serif'>No language data available yet.</text>"
+          )
+
+          languages_svg = f"""<svg xmlns='http://www.w3.org/2000/svg' width='520' height='330' viewBox='0 0 520 330' role='img' aria-label='Top languages for {escape(username)}'>
+            <rect width='520' height='330' rx='16' fill='#ffffff'/>
+            <rect x='1' y='1' width='518' height='328' rx='15' fill='none' stroke='#e2e8f0'/>
+            <text x='28' y='44' fill='#0f172a' font-size='22' font-weight='700' font-family='-apple-system,Segoe UI,Arial,sans-serif'>Top Languages (by bytes)</text>
+            {language_content}
+          </svg>
+          """
+
+          with open("assets/stats/top-languages.svg", "w", encoding="utf-8") as f:
+            f.write(languages_svg)
+
+          print("Generated assets/stats/summary.json, overview.svg, top-languages.svg")
+          PY
+
+      - name: Commit and push updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/stats/*.svg assets/stats/summary.json
+          if git diff --cached --quiet; then
+            echo "No stats changes"
+            exit 0
+          fi
+          git commit -m "chore(stats): refresh static profile stats"
+          git push
