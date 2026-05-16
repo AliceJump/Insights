@@ -37,6 +37,15 @@ Clean, static-first GitHub profile powered by GitHub Actions (no `github-readme-
   - `https://github-readme-stats-one-bice.vercel.app`
   - `https://github-readme-stats-git-masterrstaa-rickstaa.vercel.app`
 
+## Self-host Fallback (Plan B)
+1. Fork `anuraghazra/github-readme-stats`
+2. Deploy your fork to Vercel / Railway / Render
+3. Set env vars: `PAT_1` (fine-grained token, read-only), `CACHE_SECONDS=86400`
+4. Use your own endpoint:
+   - `https://<your-domain>/api?username=AliceJump&show_icons=true&hide_border=true`
+   - `https://<your-domain>/api/top-langs/?username=AliceJump&layout=compact&hide_border=true`
+5. Keep this repo's static SVG as primary, self-host endpoint only as backup
+
 ## Manual Refresh
 1. Open **Actions** → **Update Profile Stats**
 2. Click **Run workflow**
