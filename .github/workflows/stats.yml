@@ -66,11 +66,16 @@ jobs:
             page += 1
 
           owned = [r for r in repos if not r.get("fork")]
+          excluded_language_repos = {"game_local"}
+          owned_for_languages = [
+            r for r in owned
+            if str(r.get("name", "")).lower() not in excluded_language_repos
+          ]
           stars = sum(int(r.get("stargazers_count", 0)) for r in owned)
           forks = sum(int(r.get("forks_count", 0)) for r in owned)
 
           lang_totals = {}
-          for repo in owned:
+          for repo in owned_for_languages:
             languages_url = repo.get("languages_url")
             if not languages_url:
               continue
@@ -137,37 +142,42 @@ jobs:
             f.write(overview_svg)
 
           palette = ["#2563eb", "#0ea5e9", "#06b6d4", "#14b8a6", "#22c55e", "#84cc16"]
-          bar_y_start = 92
-          bar_h = 22
-          bar_gap = 14
           bar_max = 340
+          row_height = 42
+          first_row_label_y = 84
+          bar_h = 16
+          label_to_bar_gap = 8
+          top_langs_display = top_langs[:6]
+          rows_count = max(1, len(top_langs_display))
+          card_height = first_row_label_y + (rows_count - 1) * row_height + label_to_bar_gap + bar_h + 36
 
           lang_lines = []
-          for i, (name, size) in enumerate(top_langs[:6]):
+          for i, (name, size) in enumerate(top_langs_display):
             pct = size * 100 / total_lang_bytes
-            width = max(2, int(bar_max * pct / 100))
-            y = bar_y_start + i * (bar_h + bar_gap)
+            width = max(4, int(bar_max * pct / 100))
+            label_y = first_row_label_y + i * row_height
+            bar_y = label_y + label_to_bar_gap
             color = palette[i % len(palette)]
             lang_lines.append(
-              f"<text x='28' y='{y - 8}' fill='#0f172a' font-size='13' "
+              f"<text x='28' y='{label_y}' fill='#0f172a' font-size='13' "
               "font-family='-apple-system,Segoe UI,Arial,sans-serif'>"
               f"{escape(name)} <tspan fill='#64748b'>{pct:.1f}%</tspan></text>"
             )
             lang_lines.append(
-              f"<rect x='28' y='{y}' width='{bar_max}' height='{bar_h}' rx='10' fill='#e2e8f0'/>"
+              f"<rect x='28' y='{bar_y}' width='{bar_max}' height='{bar_h}' rx='8' fill='#e2e8f0'/>"
             )
             lang_lines.append(
-              f"<rect x='28' y='{y}' width='{width}' height='{bar_h}' rx='10' fill='{color}'/>"
+              f"<rect x='28' y='{bar_y}' width='{width}' height='{bar_h}' rx='8' fill='{color}'/>"
             )
 
           language_content = "".join(lang_lines) if lang_lines else (
-            "<text x='28' y='90' fill='#64748b' font-size='14' "
+            "<text x='28' y='96' fill='#64748b' font-size='14' "
             "font-family='-apple-system,Segoe UI,Arial,sans-serif'>No language data available yet.</text>"
           )
 
-          languages_svg = f"""<svg xmlns='http://www.w3.org/2000/svg' width='520' height='330' viewBox='0 0 520 330' role='img' aria-label='Top languages for {escape(username)}'>
-            <rect width='520' height='330' rx='16' fill='#ffffff'/>
-            <rect x='1' y='1' width='518' height='328' rx='15' fill='none' stroke='#e2e8f0'/>
+          languages_svg = f"""<svg xmlns='http://www.w3.org/2000/svg' width='520' height='{card_height}' viewBox='0 0 520 {card_height}' role='img' aria-label='Top languages for {escape(username)}'>
+            <rect width='520' height='{card_height}' rx='16' fill='#ffffff'/>
+            <rect x='1' y='1' width='518' height='{card_height - 2}' rx='15' fill='none' stroke='#e2e8f0'/>
             <text x='28' y='44' fill='#0f172a' font-size='22' font-weight='700' font-family='-apple-system,Segoe UI,Arial,sans-serif'>Top Languages (by bytes)</text>
             {language_content}
           </svg>
