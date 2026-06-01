@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-31T03:36:16.522783+00:00",
+  "generated_at": "2026-06-01T03:36:50.406350+00:00",
   "username": "AliceJump",
   "public_repos": 33,
   "followers": 17,
@@ -9,18 +9,18 @@
   "top_languages": [
     {
       "name": "Python",
-      "bytes": 2894797,
-      "percent": 82.01
+      "bytes": 2908315,
+      "percent": 82.07
     },
     {
       "name": "Java",
       "bytes": 180430,
-      "percent": 5.11
+      "percent": 5.09
     },
     {
       "name": "Kotlin",
       "bytes": 175477,
-      "percent": 4.97
+      "percent": 4.95
     },
     {
       "name": "C#",
@@ -30,12 +30,12 @@
     {
       "name": "Dart",
       "bytes": 57783,
-      "percent": 1.64
+      "percent": 1.63
     },
     {
       "name": "HTML",
       "bytes": 48717,
-      "percent": 1.38
+      "percent": 1.37
     }
   ]
 }
