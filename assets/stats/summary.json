@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-14T03:36:47.584192+00:00",
+  "generated_at": "2026-06-15T03:37:07.283498+00:00",
   "username": "AliceJump",
   "public_repos": 35,
   "followers": 18,
@@ -9,8 +9,8 @@
   "top_languages": [
     {
       "name": "Python",
-      "bytes": 7608992,
-      "percent": 93.29
+      "bytes": 7611562,
+      "percent": 93.24
     },
     {
       "name": "Kotlin",
@@ -24,8 +24,8 @@
     },
     {
       "name": "Dart",
-      "bytes": 65110,
-      "percent": 0.8
+      "bytes": 69972,
+      "percent": 0.86
     },
     {
       "name": "C#",
