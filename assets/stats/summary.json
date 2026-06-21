@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-06-20T03:36:07.746995+00:00",
+  "generated_at": "2026-06-21T03:36:52.609821+00:00",
   "username": "AliceJump",
   "public_repos": 35,
   "followers": 18,
   "following": 1,
-  "stars": 773,
+  "stars": 771,
   "forks": 42,
   "top_languages": [
     {
       "name": "Python",
-      "bytes": 7727586,
-      "percent": 89.63
+      "bytes": 7731263,
+      "percent": 89.67
     },
     {
       "name": "C#",
@@ -24,8 +24,8 @@
     },
     {
       "name": "Dart",
-      "bytes": 103892,
-      "percent": 1.2
+      "bytes": 100400,
+      "percent": 1.16
     },
     {
       "name": "JavaScript",
