@@ -1,41 +1,41 @@
 {
-  "generated_at": "2026-10-03T08:16:50.978945+00:00",
+  "generated_at": "2026-10-04T08:31:44.395450+00:00",
   "username": "AliceJump",
   "public_repos": 57,
   "followers": 22,
   "following": 2,
-  "stars": 848,
+  "stars": 850,
   "forks": 61,
   "top_languages": [
     {
       "name": "Python",
-      "bytes": 15522824,
-      "percent": 73.22
+      "bytes": 16112935,
+      "percent": 73.92
     },
     {
       "name": "Kotlin",
-      "bytes": 1825124,
-      "percent": 8.61
+      "bytes": 1765681,
+      "percent": 8.1
     },
     {
       "name": "JavaScript",
-      "bytes": 982335,
-      "percent": 4.63
+      "bytes": 1015302,
+      "percent": 4.66
     },
     {
       "name": "TypeScript",
-      "bytes": 971406,
-      "percent": 4.58
+      "bytes": 1001627,
+      "percent": 4.6
     },
     {
       "name": "HTML",
-      "bytes": 644566,
-      "percent": 3.04
+      "bytes": 645931,
+      "percent": 2.96
     },
     {
       "name": "PowerShell",
       "bytes": 406899,
-      "percent": 1.92
+      "percent": 1.87
     }
   ]
 }
